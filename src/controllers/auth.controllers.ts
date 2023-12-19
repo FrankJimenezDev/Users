@@ -36,6 +36,7 @@ export class AuthController {
 
             const token = await generarJWT(usuario)
 
+            res.cookie('token', token)
             res.status(200).json({
                 token
             })
