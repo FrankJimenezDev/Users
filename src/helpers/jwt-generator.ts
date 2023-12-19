@@ -1,13 +1,13 @@
 import jwt from "jsonwebtoken"
+import { User } from "../config/entities/user.entity";
 
-export const generarJWT = (administrador: any) => {
+export const generarJWT = (usuario: User) => {
 
     return new Promise((resolve, reject) => {
 
         jwt.sign({
-            id: administrador.ID,
-            edad: administrador.EDAD,
-            role: administrador.ROLE || "admin"
+            id: usuario.id,
+            edad: usuario.age
             },
             process.env.KEY_TOKEN || "",
             {
