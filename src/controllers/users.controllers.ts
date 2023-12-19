@@ -33,7 +33,7 @@ export class UsersController {
     deleteUser(req: Request, res: Response) {
         res.json({
             msg: `getAllUsers`,
-            response: `Todos los Usuarios`
+            response: `borrando usuario ...`
         })
     }
 }
