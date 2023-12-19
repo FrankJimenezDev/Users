@@ -1,7 +1,7 @@
 import express, { Application } from "express"
 import cors from "cors"
 import users from "../routes/users.routes"
-import auth from "../routes/users.routes"
+import auth from "../routes/auth.routes"
 import { db }from "../config/db/connection"
 
 class Server {
