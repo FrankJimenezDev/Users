@@ -12,13 +12,13 @@ export class User extends BaseEntity {
     @Column()
     lastname!: string
 
-    @Column()
+    @Column({ default : true})
     status!: boolean
 
     @Column()
     age!: number
 
-    @Column()
+    @Column({ unique : true})
     email!: string
 
     @Column()
