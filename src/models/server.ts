@@ -1,6 +1,7 @@
 import express, { Application } from "express"
 import cors from "cors"
 import users from "../routes/users.routes"
+import db from "../config/db/connection"
 
 class Server {
     private app: Application
@@ -14,6 +15,7 @@ class Server {
 
         this.middlewares()
 
+        this.dataBase()
 
         this.routes()
     }
@@ -21,6 +23,15 @@ class Server {
     middlewares() {
         this.app.use(cors())
         this.app.use(express.json())
+    }
+
+    async dataBase() {
+        try {
+            await db.initialize()
+            console.log(`Data Base inicializada`);
+        } catch (error) {
+            console.error(`Data Base no inicializada`, error);
+        }
     }
 
     routes() {
