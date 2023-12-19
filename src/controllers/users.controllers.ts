@@ -1,7 +1,7 @@
 import { Request, Response, } from "express"
 import { User } from "../config/entities/user.entity"
 import { encrypt } from "../helpers/bcrypt";
-import { db } from '../config/db/connection';
+import { db } from "../config/db/connection";
 
 
 export class UsersController {
@@ -9,14 +9,14 @@ export class UsersController {
 
         try {
             const usuarios: User[] = await User.find({
-                select : {
-                    id : true,
+                select: {
+                    id: true,
                     name: true,
                     status: true,
-                    lastname : true,
+                    lastname: true,
                     age: true,
-                    email : true,
-                    password : false
+                    email: true,
+                    password: false
                 }
             })
             if (usuarios.length === 0) {
@@ -33,7 +33,7 @@ export class UsersController {
         } catch (error) {
             res.status(500).json({
                 msg: `Ha ocurrido un error por favor contacte con el administrado`,
-                error
+                error: `${error}`
             })
         }
 
@@ -49,14 +49,14 @@ export class UsersController {
                 where: {
                     id
                 },
-                select : {
-                    id : true,
+                select: {
+                    id: true,
                     name: true,
                     status: true,
-                    lastname : true,
+                    lastname: true,
                     age: true,
-                    email : true,
-                    password : false
+                    email: true,
+                    password: false
                 }
             })
 
@@ -74,16 +74,51 @@ export class UsersController {
         } catch (error) {
             res.status(500).json({
                 msg: `Ha ocurrido un error por favor contacte con el administrado`,
-                error
+                error: `${error}`
             })
         }
     }
 
-    updateUser(req: Request, res: Response) {
-        res.json({
-            msg: `updateUser`,
-            response: `usuario actualizado`
-        })
+    async updateUser(req: Request, res: Response) {
+
+        const { body } = req
+        const { id } = req.params
+
+        try {
+
+            const usuarioDB = db.getRepository(User)
+
+            const usuario = await usuarioDB.findOne({
+                where: {
+                    id
+                }
+            })
+
+            if (!usuario) {
+                res.status(404).json({
+                    msg: `No se encontro usuario con id: ${id}`
+                })
+                return;
+            }
+
+            const passwordHash = await encrypt(body.password)
+
+            usuarioDB.merge(usuario, body)
+            usuarioDB.merge(usuario, { password: passwordHash })
+
+            await usuarioDB.save(usuario);
+
+            res.status(200).json({
+                msg: `Usuario actualizado`,
+                usuario
+            })
+
+        } catch (error) {
+            res.status(500).json({
+                msg: `Ha ocurrido un error por favor contacte con el administrado`,
+                error: `${error}`
+            })
+        }
     }
 
     async createUser(req: Request, res: Response) {
@@ -128,19 +163,67 @@ export class UsersController {
 
 
         } catch (error) {
-            console.error(error);
-            
             res.status(500).json({
                 msg: `Ha ocurrido un error por favor contacte con el administrado`,
-                error
+                error: `${error}`
             })
         }
     }
 
-    deleteUser(req: Request, res: Response) {
-        res.json({
-            msg: `getAllUsers`,
-            response: `borrando usuario ...`
-        })
+    async deleteUser(req: Request, res: Response) {
+
+        const { id } = req.params
+
+        try {
+
+            const usuarioDB = db.getRepository(User)
+
+            const usuario = await usuarioDB.findOne({
+                where: {
+                    id
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    status: true,
+                    lastname: true,
+                    age: true,
+                    email: true,
+                    password: false
+                }
+            })
+
+            if (!usuario) {
+                res.status(404).json({
+                    msg: `No se encontro usuario con id: ${id}`
+                })
+                return;
+            }
+
+            if (!usuario.status) {
+                usuarioDB.merge(usuario, { status: true })
+                await usuarioDB.save(usuario);
+
+                return res.status(200).json({
+                    msg: "Estado cambiado a true",
+                    usuario
+                })
+            }
+
+            usuarioDB.merge(usuario, { status: false })
+
+            await usuarioDB.save(usuario);
+
+            res.status(200).json({
+                msg: "Estado cambiado a false",
+                usuario
+            })
+
+        } catch (error) {
+            res.status(500).json({
+                msg: `Ha ocurrido un error por favor contacte con el administrado`,
+                error: `${error}`
+            })
+        }
     }
 }
