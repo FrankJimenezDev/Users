@@ -1,12 +1,14 @@
 import express, { Application } from "express"
 import cors from "cors"
 import users from "../routes/users.routes"
+import auth from "../routes/users.routes"
 import { db }from "../config/db/connection"
 
 class Server {
     private app: Application
     private port: number
     private path = {
+        auth : '/api/auth',
         users : '/api/users'
     }
     constructor() {
@@ -35,6 +37,7 @@ class Server {
     }
 
     routes() {
+        this.app.use(this.path.auth, auth)
         this.app.use(this.path.users, users)
     }
 
