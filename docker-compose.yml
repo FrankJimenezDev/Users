@@ -1,13 +1,38 @@
-version: '3.8'
+version: '3'
 
 services:
   mysql:
     image: mysql:8.0
-    container_name: 
+    container_name: ProyectoFrankDB
     environment:
-      MYSQL_ROOT_PASSWORD: 
-      MYSQL_DATABASE: 
-      MYSQL_USER: 
-      MYSQL_PASSWORD: 
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
+    networks:
+      - mynetwork
+
+  node_app:
+    image: miapp:1 # Puedes usar una imagen específica o construir la tuya
+    container_name: ProyectoFrankAPP
+    environment:
+      - PORT=${PORT}
+      - KEY_TOKEN=${KEY_TOKEN}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME} 
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    networks:
+      - mynetwork
+
+
+networks:
+  mynetwork:
+    driver: bridge

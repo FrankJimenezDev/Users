@@ -11,7 +11,7 @@ router.get('/', validarJWT,
 router.get('/:id', validarJWT,
 (req, res) => new UsersController().getOneUser(req, res))
 
-router.post('/', validarJWT,
+router.post('/',
 (req, res) => new UsersController().createUser(req, res))
 
 router.put('/:id', validarJWT,
