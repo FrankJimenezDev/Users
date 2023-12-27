@@ -3,10 +3,10 @@ import { db } from "../config/db/connection";
 import { User } from "../config/entities/user.entity";
 import { compare } from "bcryptjs";
 import { generarJWT } from "../helpers/jwt-generator";
+import { KafkaProducer } from "../config/kafka/producer.config";
 
 
 export class AuthController {
-
 
     async authUser(req: Request, res: Response) {
         const { email, password } = req.body
@@ -14,8 +14,10 @@ export class AuthController {
 
         try {
 
-            const usuario = await userDB.findOneBy({
-                email
+            const usuario = await userDB.findOne({
+                where: {
+                    email
+                }
             })
 
             if (!usuario) {
@@ -33,6 +35,33 @@ export class AuthController {
                 })
                 return;
             }
+
+            const kafkaMessage = await userDB.findOne({
+                where:{
+                    email
+                },
+                select: {
+                    id: true,
+                    email: true,
+                    status: true
+                }
+            })
+
+            const kafkaProducer = new KafkaProducer(['localhost:9092'], 'MyKafkaIdClient');
+
+            const runProducer = async () => {
+                try {
+                    await kafkaProducer.connect();
+                    await kafkaProducer.sendMessage('test', 'your-key', JSON.stringify(kafkaMessage));
+                } catch (error) {
+                    console.error('Error:', error);
+                } finally {
+                    await kafkaProducer.disconnect();
+                }
+            };
+
+            // Ejecuta el productor
+            runProducer();
 
             const token = await generarJWT(usuario)
 
