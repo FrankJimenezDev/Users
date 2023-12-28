@@ -7,7 +7,8 @@ export const generarJWT = (usuario: User) => {
 
         jwt.sign({
             id: usuario.id,
-            edad: usuario.age
+            edad: usuario.age,
+            email : usuario.email
             },
             process.env.KEY_TOKEN || "",
             {
