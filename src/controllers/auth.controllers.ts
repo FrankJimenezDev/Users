@@ -49,7 +49,7 @@ export class AuthController {
                 }
             })
 
-            const kafkaProducer = new KafkaProducer(['localhost:9092'], 'MyKafkaIdClient');
+            const kafkaProducer = new KafkaProducer([process.env.KAFKA_BROKER!], 'MyKafkaIdClient');
 
             const runProducer = async () => {
                 try {
@@ -103,7 +103,7 @@ export class AuthController {
             // Por ejemplo, puedes invalidar el token, limpiar la sesión, etc.
 
             // Enviar un mensaje de cierre de sesión a Kafka si es necesario
-            const kafkaProducer = new KafkaProducer(['localhost:9092'], 'MyKafkaIdClient');
+            const kafkaProducer = new KafkaProducer([process.env.KAFKA_BROKER!], 'MyKafkaIdClient');
             const runProducer = async () => {
                 try {
                     await kafkaProducer.connect();
