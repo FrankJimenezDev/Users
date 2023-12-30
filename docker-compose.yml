@@ -12,10 +12,10 @@ services:
     ports:
       - "3306:3306"
     networks:
-      - mynetwork
-
+      - mykafkanetwork
+  
   node_app:
-    image: miapp:1 # Puedes usar una imagen específica o construir la tuya
+    image: loginuser:1 # Puedes usar una imagen específica o construir la tuya
     container_name: ProyectoFrankAPP
     environment:
       - PORT=${PORT}
@@ -30,9 +30,8 @@ services:
     depends_on:
       - mysql
     networks:
-      - mynetwork
-
+      - mykafkanetwork 
 
 networks:
-  mynetwork:
-    driver: bridge
+  mykafkanetwork:
+    external: true
