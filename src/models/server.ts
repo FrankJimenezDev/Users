@@ -1,5 +1,7 @@
 import express, { Application } from "express"
 import cors from "cors"
+import cookieParser from "cookie-parser"
+
 import users from "../routes/users.routes"
 import auth from "../routes/auth.routes"
 import { db }from "../config/db/connection"
@@ -24,6 +26,7 @@ class Server {
 
     middlewares() {
         this.app.use(cors())
+        this.app.use(cookieParser())
         this.app.use(express.json())
     }
 

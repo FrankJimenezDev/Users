@@ -7,7 +7,7 @@ import { User } from '../config/entities/user.entity';
 
 export const validarJWT = async (req: Request, res: Response, next: express.NextFunction) => {
 
-    const token = req.header('x-token');
+    const token = req.cookies['token'];
 
     if (!token) {
         return res.status(401).json({
